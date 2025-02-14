@@ -1,146 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CGPA Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Variables for theming */
+        :root {
+          --primary-color: #3498db;
+          --primary-hover: #2980b9;
+          --secondary-color: #2ecc71;
+          --secondary-hover: #27ae60;
+          --danger-color: #e74c3c;
+          --danger-hover: #c0392b;
+          --accent-color: #f39c12;
+          --accent-hover: #e67e22;
+          /* New variables for download and print buttons */
+          --download-color: #8e44ad;
+          --download-hover: #732d91;
+          --print-color: #16a085;
+          --print-hover: #138d75;
+          --bg-light: #f4f4f4;
+          --bg-dark: #121212;
+          --container-light: #fff;
+          --container-dark: #1e1e1e;
+          --text-light: #000;
+          --text-dark: #e0e0e0;
+          --border-light: #ccc;
+          --border-dark: #444;
+        }
+
+        /* Global reset and font styling */
+        * {
+          box-sizing: border-box;
+        }
+        body {
+          margin: 0;
+          font-family: 'Poppins', sans-serif;
+          background: var(--bg-light);
+          color: var(--text-light);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+          min-height: 100vh;
+          transition: background 0.3s, color 0.3s;
+        }
+
+        /* Header styles */
+        header {
+          width: 100%;
+          max-width: 600px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        header h1 {
+          margin: 0;
+          font-weight: 600;
+          font-size: 1.8rem;
+        }
+        header button {
+          padding: 8px 16px;
+          border: none;
+          border-radius: 5px;
+          background: var(--primary-color);
+          color: #fff;
+          cursor: pointer;
+          transition: background 0.3s;
+          font-size: 1rem;
+        }
+        header button:hover {
+          background: var(--primary-hover);
+        }
+
+        /* Main container */
+        .container {
+          background: var(--container-light);
+          width: 100%;
+          max-width: 600px;
+          padding: 20px;
+          border: 1px solid var(--border-light);
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Form styles */
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .course {
+          position: relative;
+          padding: 10px;
+          border-bottom: 1px solid #ddd;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .course:last-child {
+          border-bottom: none;
+        }
+        .course label {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+        .course input {
+          width: 100%;
+          padding: 10px;
+          font-size: 1rem;
+          border: 1px solid var(--border-light);
+          border-radius: 5px;
+          transition: border 0.3s;
+        }
+        .course input:focus {
+          border-color: var(--primary-color);
+          outline: none;
+        }
+        .input-group {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .input-group input {
+          flex: 1;
+        }
+        .remove-course {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: transparent;
+          border: none;
+          color: var(--danger-color);
+          font-size: 1.2rem;
+          cursor: pointer;
+          transition: color 0.3s;
+        }
+        .remove-course:hover {
+          color: var(--danger-hover);
+        }
+
+        /* Button group */
+        .buttons {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .buttons button {
+          padding: 12px 20px;
+          font-size: 1rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background 0.3s;
+          flex: 1;
+          max-width: 180px;
+        }
+        #add-course {
+          background: var(--secondary-color);
+          color: #fff;
+        }
+        #add-course:hover {
+          background: var(--secondary-hover);
+        }
+        #reset-courses {
+          background: var(--danger-color);
+          color: #fff;
+        }
+        #reset-courses:hover {
+          background: var(--danger-hover);
+        }
+        button[type="submit"] {
+          background: var(--primary-color);
+          color: #fff;
+        }
+        button[type="submit"]:hover {
+          background: var(--primary-hover);
+        }
+        /* Updated Download and Print button colors */
+        #download-pdf {
+          background: var(--download-color);
+          color: #fff;
+        }
+        #download-pdf:hover {
+          background: var(--download-hover);
+        }
+        #print-result {
+          background: var(--print-color);
+          color: #fff;
+        }
+        #print-result:hover {
+          background: var(--print-hover);
+        }
+
+        /* Result Section */
+        .result-container {
+          margin-top: 30px;
+          text-align: center;
+        }
+        .result-container h2 {
+          margin-bottom: 10px;
+          font-size: 1.5rem;
+          font-weight: 500;
+        }
+        .result-container p {
+          margin: 5px 0;
+          font-size: 1rem;
+        }
+        .result-buttons {
+          margin-top: 15px;
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+          background: var(--bg-dark);
+          color: var(--text-dark);
+        }
+        body.dark-mode .container {
+          background: var(--container-dark);
+          border-color: var(--border-dark);
+          box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .course input {
+          background: #333;
+          color: #fff;
+          border-color: var(--border-dark);
+        }
+        body.dark-mode header button {
+          background: var(--primary-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+          .buttons button {
+            flex: 1 1 100%;
+          }
+        }
+
+        /* Print Styles */
+        @media print {
+          header,
+          .buttons,
+          #download-pdf,
+          #print-result,
+          #mode-toggle {
+            display: none;
+          }
+          body,
+          .container {
+            background: #fff;
+            color: #000;
+          }
+        }
+    </style>
+
+    <!-- jsPDF Library for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-<div class="container">
+<!-- Page Header -->
+<header>
     <h1>CGPA Calculator</h1>
+    <h4>Track your improvement </h4>
+
+    <button id="mode-toggle" aria-label="Toggle Light/Dark Mode">Dark Mode</button>
+</header>
+
+<!-- Main Container -->
+<main class="container">
     <form id="cgpa-form">
         <div id="courses">
-            <div class="course">
-                <label>Course 1:</label>
-                <input type="number" class="grade" placeholder="Grade (e.g., 4.0)" step="0.25" min="1" max="4" required>
-                <input type="number" class="credits" placeholder="Credits" step="0.5" min="0" required>
-            </div>
+            <!-- Dynamic course entries will be appended here -->
         </div>
-        <button type="button" id="add-course">Add Course</button>
-        <button type="submit">Calculate CGPA</button>
+        <div class="buttons">
+            <button type="button" id="add-course">Add Course</button>
+            <button type="button" id="reset-courses">Reset</button>
+            <button type="submit">Calculate CGPA</button>
+        </div>
     </form>
-    <h2 id="result">Your CGPA: <span id="cgpa">-</span></h2>
-</div>
-<script src="script.js"></script>
-</body>
-</html>
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f4f4f4;
-        margin: 0;
-    }
+    <div id="result-container" class="result-container">
+        <h2>Your CGPA: <span id="cgpa">-</span></h2>
+        <p>Total Credits: <span id="total-credits">0</span></p>
+        <p>Total Grade Points: <span id="total-grade-points">0</span></p>
+        <div class="result-buttons">
+            <button type="button" id="download-pdf">Download PDF</button>
+            <button type="button" id="print-result">Print</button>
+        </div>
+    </div>
+</main>
 
-    .container {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-        background-color: #fff;
-        width: 300px;
-        text-align: center;
-    }
-
-    h1 {
-        margin-bottom: 20px;
-    }
-
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .course {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .course input {
-        width: 45%;
-        padding: 5px;
-        font-size: 16px;
-    }
-
-    button {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        cursor: pointer;
-    }
-
-    #add-course {
-        background-color: #4caf50;
-        color: white;
-    }
-
-    #add-course:hover {
-        background-color: #45a049;
-    }
-
-    button[type="submit"] {
-        background-color: #008cba;
-        color: white;
-    }
-
-    button[type="submit"]:hover {
-        background-color: #007bb5;
-    }
-
-    #result {
-        margin-top: 20px;
-    }
-
-</style>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('cgpa-form');
-        const coursesContainer = document.getElementById('courses');
-        const addCourseButton = document.getElementById('add-course');
-        const result = document.getElementById('result');
-        const cgpaDisplay = document.getElementById('cgpa');
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM element selections
+      const form = document.getElementById('cgpa-form');
+      const coursesContainer = document.getElementById('courses');
+      const addCourseButton = document.getElementById('add-course');
+      const resetCoursesButton = document.getElementById('reset-courses');
+      const cgpaDisplay = document.getElementById('cgpa');
+      const totalCreditsDisplay = document.getElementById('total-credits');
+      const totalGradePointsDisplay = document.getElementById('total-grade-points');
+      const downloadPdfButton = document.getElementById('download-pdf');
+      const printResultButton = document.getElementById('print-result');
+      const modeToggleButton = document.getElementById('mode-toggle');
 
-        addCourseButton.addEventListener('click', function () {
-            const courseCount = coursesContainer.children.length + 1;
-            const newCourse = document.createElement('div');
-            newCourse.classList.add('course');
-            newCourse.innerHTML = `
-                <label>Course ${courseCount}:</label>
-                <input type="number" class="grade" placeholder="Grade (e.g., 4.0)" step="0.01" min="0" max="4" required>
-                <input type="number" class="credits" placeholder="Credits" step="0.5" min="0" required>
-            `;
-            coursesContainer.appendChild(newCourse);
+      // Save courses data in localStorage
+      function updateLocalStorage() {
+        const coursesData = Array.from(coursesContainer.children).map(courseDiv => ({
+          courseName: courseDiv.querySelector('.course-name').value,
+          grade: courseDiv.querySelector('.grade').value,
+          credits: courseDiv.querySelector('.credits').value
+        }));
+        localStorage.setItem('coursesData', JSON.stringify(coursesData));
+      }
+
+      // Load courses from localStorage if available
+      function loadCoursesFromLocalStorage() {
+        const stored = localStorage.getItem('coursesData');
+        if (stored) {
+          try {
+            const coursesData = JSON.parse(stored);
+            if (Array.isArray(coursesData) && coursesData.length > 0) {
+              coursesContainer.innerHTML = '';
+              coursesData.forEach(course => {
+                addCourse(course.courseName, course.grade, course.credits);
+              });
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing stored courses', e);
+          }
+        }
+        // If no stored data, add one default course row
+        addCourse();
+      }
+
+      // Function to add a new course row with optional pre-filled values
+      const addCourse = (courseNameValue = '', gradeValue = '', creditValue = '') => {
+        const courseCount = coursesContainer.children.length + 1;
+        const courseDiv = document.createElement('div');
+        courseDiv.classList.add('course');
+
+        // Label for the course row
+        const label = document.createElement('label');
+        label.textContent = `Course ${courseCount}:`;
+        label.setAttribute('for', `course-name-${courseCount}`);
+
+        // Course name input (optional)
+        const courseNameInput = document.createElement('input');
+        courseNameInput.type = 'text';
+        courseNameInput.className = 'course-name';
+        courseNameInput.name = 'courseName[]';
+        courseNameInput.id = `course-name-${courseCount}`;
+        courseNameInput.placeholder = 'Course Name (optional)';
+        courseNameInput.value = courseNameValue;
+
+        // Input group container for grade and credits
+        const inputGroup = document.createElement('div');
+        inputGroup.classList.add('input-group');
+
+        // Grade input
+        const gradeInput = document.createElement('input');
+        gradeInput.type = 'number';
+        gradeInput.className = 'grade';
+        gradeInput.name = 'grade[]';
+        gradeInput.id = `grade-${courseCount}`;
+        gradeInput.placeholder = 'Grade (e.g., 4.0)';
+        gradeInput.step = '0.25';
+        gradeInput.min = '0';
+        gradeInput.max = '4';
+        gradeInput.required = true;
+        gradeInput.value = gradeValue;
+
+        // Credits input
+        const creditInput = document.createElement('input');
+        creditInput.type = 'number';
+        creditInput.className = 'credits';
+        creditInput.name = 'credits[]';
+        creditInput.placeholder = 'Credits';
+        creditInput.step = '0.5';
+        creditInput.min = '1';
+        creditInput.max = '200';
+        creditInput.required = true;
+        creditInput.value = creditValue;
+
+        // Append grade and credit inputs to the group
+        inputGroup.appendChild(gradeInput);
+        inputGroup.appendChild(creditInput);
+
+        // Remove button to delete a course row
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-course';
+        removeBtn.title = 'Remove this course';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => {
+          if (coursesContainer.children.length > 1) {
+            courseDiv.remove();
+            updateCourseLabels();
+            calculateCGPA();
+            updateLocalStorage();
+          } else {
+            alert('At least one course is required.');
+          }
         });
 
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const grades = document.querySelectorAll('.grade');
-            const credits = document.querySelectorAll('.credits');
-
-            let totalCredits = 0;
-            let totalGradePoints = 0;
-
-            grades.forEach((grade, index) => {
-                const gradeValue = parseFloat(grade.value);
-                const creditValue = parseFloat(credits[index].value);
-
-                totalGradePoints += gradeValue * creditValue;
-                totalCredits += creditValue;
-            });
-
-            const cgpa = totalGradePoints / totalCredits;
-            cgpaDisplay.textContent = cgpa.toFixed(2);
-            result.style.display = 'block';
+        // Update calculation and storage when any input changes
+        [courseNameInput, gradeInput, creditInput].forEach(input => {
+          input.addEventListener('input', () => {
+            calculateCGPA();
+            updateLocalStorage();
+          });
         });
+
+        // Append elements to the course row
+        courseDiv.appendChild(label);
+        courseDiv.appendChild(courseNameInput);
+        courseDiv.appendChild(inputGroup);
+        courseDiv.appendChild(removeBtn);
+
+        // Append the course row to the container
+        coursesContainer.appendChild(courseDiv);
+      };
+
+      // Update course labels after removal
+      const updateCourseLabels = () => {
+        Array.from(coursesContainer.children).forEach((courseDiv, index) => {
+          const label = courseDiv.querySelector('label');
+          label.textContent = `Course ${index + 1}:`;
+          label.setAttribute('for', `course-name-${index + 1}`);
+        });
+      };
+
+      // Calculate CGPA along with total credits and grade points
+      const calculateCGPA = () => {
+        const gradeInputs = document.querySelectorAll('.grade');
+        const creditInputs = document.querySelectorAll('.credits');
+        let totalGradePoints = 0;
+        let totalCredits = 0;
+        gradeInputs.forEach((gradeInput, index) => {
+          const gradeValue = parseFloat(gradeInput.value);
+          const creditValue = parseFloat(creditInputs[index].value);
+          if (!isNaN(gradeValue) && !isNaN(creditValue)) {
+            totalGradePoints += gradeValue * creditValue;
+            totalCredits += creditValue;
+          }
+        });
+        totalCreditsDisplay.textContent = totalCredits;
+        totalGradePointsDisplay.textContent = totalGradePoints.toFixed(2);
+        if (totalCredits === 0) {
+          cgpaDisplay.textContent = 'N/A';
+          return;
+        }
+        const cgpa = totalGradePoints / totalCredits;
+        cgpaDisplay.textContent = cgpa.toFixed(2);
+      };
+
+      // Event listener for adding a new course row
+      addCourseButton.addEventListener('click', () => {
+        addCourse();
+        updateLocalStorage();
+      });
+
+      // Event listener for resetting courses with confirmation
+      resetCoursesButton.addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all courses?')) {
+          coursesContainer.innerHTML = '';
+          cgpaDisplay.textContent = '-';
+          totalCreditsDisplay.textContent = '0';
+          totalGradePointsDisplay.textContent = '0';
+          localStorage.removeItem('coursesData');
+          addCourse(); // Add a default course row
+        }
+      });
+
+      // Prevent form submission from reloading the page and calculate CGPA
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        calculateCGPA();
+      });
+
+      // PDF generation using jsPDF
+      downloadPdfButton.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const title = 'CGPA Calculation Result';
+        const cgpaText = `Your CGPA is: ${cgpaDisplay.textContent}`;
+        let coursesText = 'Courses Details:\n';
+        Array.from(coursesContainer.children).forEach((courseDiv, index) => {
+          const courseName = courseDiv.querySelector('.course-name').value || `Course ${index + 1}`;
+          const grade = courseDiv.querySelector('.grade').value;
+          const credits = courseDiv.querySelector('.credits').value;
+          coursesText += `${index + 1}. ${courseName} - Grade: ${grade}, Credits: ${credits}\n`;
+        });
+        doc.setFontSize(18);
+        doc.text(title, 10, 20);
+        doc.setFontSize(14);
+        doc.text(cgpaText, 10, 40);
+        doc.setFontSize(12);
+        doc.text(coursesText, 10, 60);
+        doc.save('CGPA_Result.pdf');
+      });
+
+      // Print results
+      printResultButton.addEventListener('click', () => {
+        window.print();
+      });
+
+      // Dark/Light mode toggle with persistence
+      const applyDarkMode = (enabled) => {
+        if (enabled) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      };
+      modeToggleButton.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+      });
+      const darkModePreference = localStorage.getItem('darkMode') === 'true';
+      applyDarkMode(darkModePreference);
+
+      // Load stored courses or initialize with one row, and perform initial calculation
+      loadCoursesFromLocalStorage();
+      calculateCGPA();
     });
 </script>
+</body>
+</html>
