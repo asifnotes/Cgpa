@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>CGPA Calculator</h1>
+    <form id="cgpa-form">
+        <div id="courses">
+            <div class="course">
+                <label>Course 1:</label>
+                <input type="number" class="grade" placeholder="Grade (e.g., 4.0)" step="0.25" min="1" max="4" required>
+                <input type="number" class="credits" placeholder="Credits" step="0.5" min="0" required>
+            </div>
+        </div>
+        <button type="button" id="add-course">Add Course</button>
+        <button type="submit">Calculate CGPA</button>
+    </form>
+    <h2 id="result">Your CGPA: <span id="cgpa">-</span></h2>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+        margin: 0;
+    }
+
+    .container {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        background-color: #fff;
+        width: 300px;
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .course {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .course input {
+        width: 45%;
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+
+    #add-course {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    #add-course:hover {
+        background-color: #45a049;
+    }
+
+    button[type="submit"] {
+        background-color: #008cba;
+        color: white;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #007bb5;
+    }
+
+    #result {
+        margin-top: 20px;
+    }
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('cgpa-form');
+        const coursesContainer = document.getElementById('courses');
+        const addCourseButton = document.getElementById('add-course');
+        const result = document.getElementById('result');
+        const cgpaDisplay = document.getElementById('cgpa');
+
+        addCourseButton.addEventListener('click', function () {
+            const courseCount = coursesContainer.children.length + 1;
+            const newCourse = document.createElement('div');
+            newCourse.classList.add('course');
+            newCourse.innerHTML = `
+                <label>Course ${courseCount}:</label>
+                <input type="number" class="grade" placeholder="Grade (e.g., 4.0)" step="0.01" min="0" max="4" required>
+                <input type="number" class="credits" placeholder="Credits" step="0.5" min="0" required>
+            `;
+            coursesContainer.appendChild(newCourse);
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const grades = document.querySelectorAll('.grade');
+            const credits = document.querySelectorAll('.credits');
+
+            let totalCredits = 0;
+            let totalGradePoints = 0;
+
+            grades.forEach((grade, index) => {
+                const gradeValue = parseFloat(grade.value);
+                const creditValue = parseFloat(credits[index].value);
+
+                totalGradePoints += gradeValue * creditValue;
+                totalCredits += creditValue;
+            });
+
+            const cgpa = totalGradePoints / totalCredits;
+            cgpaDisplay.textContent = cgpa.toFixed(2);
+            result.style.display = 'block';
+        });
+    });
+</script>
